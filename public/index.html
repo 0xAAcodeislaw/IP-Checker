@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#0b1020">
+    <meta name="description" content="从国内、Cloudflare 和全球网络检测当前浏览器使用的出口 IP。">
+    <title>出口 IP 检测</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="ambient ambient-one" aria-hidden="true"></div>
+    <div class="ambient ambient-two" aria-hidden="true"></div>
+
+    <main class="shell">
+      <header class="hero">
+        <div class="eyebrow"><span class="pulse" aria-hidden="true"></span>实时网络诊断</div>
+        <h1>你的流量，从哪里出去？</h1>
+        <p class="intro">同时访问三个独立检测点，快速确认国内、海外及全球线路是否使用不同的出口 IP。</p>
+      </header>
+
+      <section class="summary" aria-live="polite" aria-atomic="true">
+        <div class="summary-icon" aria-hidden="true">↗</div>
+        <div>
+          <p class="summary-label">检测结论</p>
+          <p id="summary-text">正在连接检测点…</p>
+        </div>
+        <button id="retry-all" class="secondary-button" type="button">重新检测</button>
+      </section>
+
+      <section class="cards" aria-label="IP 检测结果">
+        <article class="card" data-probe="domestic">
+          <div class="card-topline">
+            <span class="route-tag">CN</span>
+            <span class="status loading"><span class="status-dot"></span><span class="status-text">检测中</span></span>
+          </div>
+          <div class="card-heading">
+            <p class="card-kicker">从国内网络检测</p>
+            <h2>国内线路</h2>
+          </div>
+          <div class="result-row">
+            <p class="ip-address" aria-label="国内线路 IP">—</p>
+            <button class="copy-button" type="button" aria-label="复制国内线路 IP" disabled>复制</button>
+          </div>
+          <p class="location">正在获取位置…</p>
+          <div class="card-footer">
+            <span>检测点</span>
+            <strong class="provider">IPIP</strong>
+          </div>
+        </article>
+
+        <article class="card featured" data-probe="overseas">
+          <div class="card-topline">
+            <span class="route-tag">CF</span>
+            <span class="status loading"><span class="status-dot"></span><span class="status-text">检测中</span></span>
+          </div>
+          <div class="card-heading">
+            <p class="card-kicker">从 Cloudflare 检测</p>
+            <h2>海外线路</h2>
+          </div>
+          <div class="result-row">
+            <p class="ip-address" aria-label="海外线路 IP">—</p>
+            <button class="copy-button" type="button" aria-label="复制海外线路 IP" disabled>复制</button>
+          </div>
+          <p class="location">正在获取位置…</p>
+          <div class="card-footer">
+            <span>检测点</span>
+            <strong class="provider">Cloudflare</strong>
+          </div>
+        </article>
+
+        <article class="card" data-probe="global">
+          <div class="card-topline">
+            <span class="route-tag">GL</span>
+            <span class="status loading"><span class="status-dot"></span><span class="status-text">检测中</span></span>
+          </div>
+          <div class="card-heading">
+            <p class="card-kicker">从全球网络检测</p>
+            <h2>全球线路</h2>
+          </div>
+          <div class="result-row">
+            <p class="ip-address" aria-label="全球线路 IP">—</p>
+            <button class="copy-button" type="button" aria-label="复制全球线路 IP" disabled>复制</button>
+          </div>
+          <p class="location">正在获取位置…</p>
+          <div class="card-footer">
+            <span>检测点</span>
+            <strong class="provider">IP.SB</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="explanation" aria-labelledby="how-it-works">
+        <div>
+          <p class="section-kicker">HOW IT WORKS</p>
+          <h2 id="how-it-works">看懂检测结果</h2>
+        </div>
+        <div class="explanation-grid">
+          <p><strong>三个 IP 相同</strong><span>通常表示所有流量都使用同一个出口，没有发现域名分流。</span></p>
+          <p><strong>出现不同 IP</strong><span>通常表示代理或路由规则让不同检测点使用了不同出口。</span></p>
+          <p><strong>某项检测失败</strong><span>对应域名可能被阻断；其他成功结果仍然有效，可单独重试。</span></p>
+        </div>
+      </section>
+
+      <footer>
+        <p>仅在浏览器内请求检测点，不存储检测结果，不使用统计脚本。</p>
+        <p>结果仅反映当前浏览器到各检测点的网络路径。</p>
+      </footer>
+    </main>
+
+    <noscript>此页面需要 JavaScript 才能请求多个独立检测点。</noscript>
+  </body>
+</html>
