@@ -4,6 +4,8 @@
 
 **在线使用：** https://ip-route-checker.0xaa-codeislaw.workers.dev
 
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/0xAAcodeislaw/IP-Checker)
+
 ## 检测线路
 
 - 国内线路：IPIP
@@ -21,7 +23,21 @@
 
 ## 部署
 
-### 方法一：Wrangler（推荐）
+### 方法一：一键部署到 Cloudflare（推荐）
+
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/0xAAcodeislaw/IP-Checker)
+
+点击按钮，登录 Cloudflare 和 GitHub 后确认仓库名与 Worker 名即可。Cloudflare 会把项目复制到使用者自己的 GitHub 账户，通过 Workers Builds 部署到使用者自己的 Cloudflare 账户；不消耗本项目维护者的额度，也不需要预先手动 Fork。
+
+如果已经 Fork 并修改了项目，把下面地址中的 `<你的 GitHub 用户名>` 替换为实际用户名后打开，即可部署自己的 Fork：
+
+```text
+https://deploy.workers.cloudflare.com/?url=https://github.com/<你的 GitHub 用户名>/IP-Checker
+```
+
+Cloudflare 官方说明：[Deploy to Cloudflare buttons](https://developers.cloudflare.com/workers/platform/deploy-buttons/)。
+
+### 方法二：Wrangler
 
 需要 Node.js 20 或更高版本。克隆仓库并登录 Cloudflare：
 
@@ -34,7 +50,7 @@ npx wrangler deploy
 
 Wrangler 会同时部署 `src/index.js` 和 `public/` 中的静态资源。
 
-### 方法二：粘贴到 Workers 在线编辑器
+### 方法三：粘贴到 Workers 在线编辑器
 
 无需安装任何工具：
 
@@ -45,7 +61,7 @@ Wrangler 会同时部署 `src/index.js` 和 `public/` 中的静态资源。
 
 这个文件已内嵌 HTML、CSS 和浏览器脚本，不需要绑定静态资源、环境变量或数据库。不能只粘贴 `src/index.js`，它依赖 Wrangler 配置的静态资源绑定。
 
-### 方法三：上传到 Cloudflare Pages
+### 方法四：上传到 Cloudflare Pages
 
 1. 下载并解压本仓库。
 2. 在 Cloudflare 控制台进入 **Workers & Pages**，选择创建 Pages 应用并使用 **Drag and drop your files**。
