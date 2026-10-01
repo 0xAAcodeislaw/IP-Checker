@@ -2,9 +2,33 @@
 
 基于 Cloudflare Workers 的多线路出口 IP 检测页。浏览器并行访问三个独立检测点，用于判断当前网络是否存在域名分流。
 
-**在线使用：** https://ip-route-checker.0xaa-codeislaw.workers.dev
+**在线网页和命令行接口：** https://ip-route-checker.0xaa-codeislaw.workers.dev
 
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/0xAAcodeislaw/IP-Checker)
+
+## 命令行使用
+
+直接查询完整 IP 信息：
+
+```sh
+curl https://ip-route-checker.0xaa-codeislaw.workers.dev
+```
+
+只返回 IP 地址：
+
+```sh
+curl https://ip-route-checker.0xaa-codeislaw.workers.dev/ip
+```
+
+显式请求 JSON：
+
+```sh
+curl https://ip-route-checker.0xaa-codeislaw.workers.dev/json
+```
+
+根路径会根据客户端自动响应：浏览器获得检测网页，`curl`、`wget`、HTTPie、Python Requests、Go HTTP Client 和 PowerShell 获得格式化 JSON。`/json` 和 `/ip` 不依赖客户端识别。IPv4 或 IPv6 取决于客户端连接该域名时实际使用的协议。
+
+其他人部署后使用自己的 `*.workers.dev` 默认地址，也可以自行绑定自定义域名；所有请求消耗部署者自己的 Cloudflare 额度。
 
 ## 检测线路
 

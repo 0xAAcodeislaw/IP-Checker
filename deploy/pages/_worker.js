@@ -14,11 +14,21 @@ function withSecurityHeaders(response) {
   return secured;
 }
 
-function json(data, init = {}) {
+function json(data, init = {}, pretty = false) {
   const headers = new Headers(init.headers);
   headers.set("Content-Type", "application/json; charset=utf-8");
   headers.set("Cache-Control", "no-store");
-  return withSecurityHeaders(new Response(JSON.stringify(data), { ...init, headers }));
+  headers.set("Access-Control-Allow-Origin", "*");
+  const body = JSON.stringify(data, null, pretty ? 2 : 0) + (pretty ? "\n" : "");
+  return withSecurityHeaders(new Response(body, { ...init, headers }));
+}
+
+function text(data, init = {}) {
+  const headers = new Headers(init.headers);
+  headers.set("Content-Type", "text/plain; charset=utf-8");
+  headers.set("Cache-Control", "no-store");
+  headers.set("Access-Control-Allow-Origin", "*");
+  return withSecurityHeaders(new Response(data, { ...init, headers }));
 }
 
 function clientDetails(request) {
@@ -31,24 +41,82 @@ function clientDetails(request) {
     continent: cf.continent ?? null,
     postalCode: cf.postalCode ?? null,
     timezone: cf.timezone ?? null,
+    latitude: cf.latitude ?? null,
+    longitude: cf.longitude ?? null,
     asn: cf.asn ?? null,
     organization: cf.asOrganization ?? null,
     colo: cf.colo ?? null,
   };
 }
 
+function commandLineDetails(request) {
+  const details = clientDetails(request);
+  const protocol = details.ip?.includes(":") ? "IPv6" : details.ip ? "IPv4" : null;
+  const location =
+    details.latitude != null && details.longitude != null
+      ? `${details.latitude},${details.longitude}`
+      : null;
+  const organization = [
+    details.asn ? `AS${details.asn}` : null,
+    details.organization,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return {
+    ip: details.ip,
+    version: protocol,
+    city: details.city,
+    region: details.region,
+    country: details.country,
+    continent: details.continent,
+    loc: location,
+    org: organization || null,
+    postal: details.postalCode,
+    timezone: details.timezone,
+    colo: details.colo,
+  };
+}
+
+function isCommandLineClient(request) {
+  const userAgent = request.headers.get("User-Agent")?.toLowerCase() ?? "";
+  return /(?:^|\s|\/)(?:curl|wget|httpie|python-requests|go-http-client|libwww-perl|powershell)(?:\/|\s|$)/.test(
+    userAgent,
+  );
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    if (url.pathname === "/api/ip") {
-      if (request.method !== "GET") {
+    const isReadRequest = request.method === "GET" || request.method === "HEAD";
+    const commandLineResponse =
+      url.pathname === "/json" ||
+      (url.pathname === "/" && isCommandLineClient(request));
+
+    if (commandLineResponse || url.pathname === "/api/ip") {
+      if (!isReadRequest) {
         return json(
           { error: "method_not_allowed" },
-          { status: 405, headers: { Allow: "GET" } },
+          { status: 405, headers: { Allow: "GET, HEAD" } },
         );
       }
-      return json(clientDetails(request));
+      const details =
+        url.pathname === "/api/ip"
+          ? clientDetails(request)
+          : commandLineDetails(request);
+      return json(details, { status: 200 }, commandLineResponse);
+    }
+
+    if (url.pathname === "/ip") {
+      if (!isReadRequest) {
+        return text("Method not allowed\n", {
+          status: 405,
+          headers: { Allow: "GET, HEAD" },
+        });
+      }
+      const ip = request.headers.get("CF-Connecting-IP");
+      return text(ip ? `${ip}\n` : "Unknown\n");
     }
 
     if (url.pathname.startsWith("/api/")) {
